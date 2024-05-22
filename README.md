@@ -12,3 +12,5 @@ mysql -u root -p
 ```
 
 Kafka broker setup can refer to [this](https://github.com/Lu-weiting/Kafka-Lab/blob/main/docker-compose.yml).
+
+Env file is in the line group. Copy and paste the env file to the root dir layer~~
