@@ -11,6 +11,6 @@ sudo docker exec -it ds_mysql /bin/sh
 mysql -u root -p
 ```
 
-Kafka broker setup can refer to [this](https://github.com/Lu-weiting/Kafka-Lab/blob/main/docker-compose.yml).
+For a full Kafka setup demoed previously, please refer to [this](https://github.com/timsu92/kafka_example.git).
 
 Env file is in the line group. Copy and paste the env file to the root dir layer~~
