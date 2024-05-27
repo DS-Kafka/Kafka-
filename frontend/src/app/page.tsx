@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Header from '@/app/components/Header'
 import Banner from '@/app/components/Banner'
 import OnSale from './components/OnSale'
+import Footer from '@/app/components/Footer'
 
 export default function Home() {
     return (
@@ -11,6 +12,7 @@ export default function Home() {
                 <Banner />
                 <OnSale />
             </main>
+            <Footer />
         </>
     )
 }
