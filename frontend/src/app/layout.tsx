@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Noto_Sans_TC } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const noto_Sans_TC = Noto_Sans_TC({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
     title: 'DShome 24hr購物',
@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={inter.className}>{children}</body>
+            <body className={noto_Sans_TC.className}>{children}</body>
         </html>
     )
 }
