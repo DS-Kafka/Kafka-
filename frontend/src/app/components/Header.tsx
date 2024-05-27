@@ -1,32 +1,20 @@
 'use client'
 
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
-import {
-    Button,
-    Input,
-    Navbar,
-    NavbarBrand,
-    NavbarContent,
-    NavbarItem,
-    NavbarMenu,
-    NavbarMenuToggle,
-} from '@nextui-org/react'
+import { Button, Input } from '@nextui-org/react'
 import { FaSearch } from 'react-icons/fa'
-import { FaQuestion } from 'react-icons/fa6'
-import { IoPersonSharp } from 'react-icons/io5'
-import { TbBellRinging2Filled } from 'react-icons/tb'
+
 import { MdOutlineShoppingCart } from 'react-icons/md'
 import { IoPersonOutline } from 'react-icons/io5'
 
 export default function Header() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [keyword, setKeyword] = useState('')
 
     return (
         <>
-            <header className="2xl:px-96 py-4 px-4 md:px-32 justify-between w-full items-center flex bg-white sticky">
+            <header className="sticky top-0 z-50 flex items-center justify-between w-full px-4 py-4 bg-white 2xl:px-96 md:px-32">
                 <Link href="/">
                     <Image
                         alt="HOHOJIA"
@@ -45,10 +33,10 @@ export default function Header() {
                         placeholder="搜尋"
                         value={keyword}
                         onChange={(e) => setKeyword(e.target.value)}
-                        className="border-2 w-full  border-yellow rounded-xl bg-white px-1 hover:bg-white "
+                        className="w-full px-1 bg-white border-2 border-yellow rounded-xl hover:bg-white "
                         startContent={
                             <Button
-                                className="bg-transparent p-0 rounded-s-none rounded-e-sm text-yellow"
+                                className="p-0 bg-transparent rounded-s-none rounded-e-sm text-yellow"
                                 isIconOnly
                                 startContent={<FaSearch />}
                             />
@@ -63,17 +51,17 @@ export default function Header() {
                     />
                 </div>
                 <div className="flex items-center gap-5">
-                    <div className="text-zinc-600 bg-transparent flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-center justify-center bg-transparent text-zinc-600">
                         <MdOutlineShoppingCart size={20} />
                         <div className="hidden md:block">購物車</div>
                     </div>
-                    <div className="text-zinc-600 bg-transparent flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-center justify-center bg-transparent text-zinc-600">
                         <IoPersonOutline size={20} className="" />
                         <div className="hidden md:block">登入/註冊</div>
                     </div>
                 </div>
             </header>
-            <div className="w-full  md:hidden sticky px-4 bg-white">
+            <div className="w-full px-4 bg-white md:hidden">
                 <Input
                     radius="lg"
                     // key="outside"
@@ -82,10 +70,10 @@ export default function Header() {
                     placeholder="搜尋"
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
-                    className=" border-2 w-full   border-yellow rounded-xl bg-white px-1 hover:bg-white "
+                    className="w-full px-1 bg-white border-2 border-yellow rounded-xl hover:bg-white"
                     startContent={
                         <Button
-                            className="bg-transparent p-0 rounded-s-none rounded-e-sm text-yellow"
+                            className="p-0 bg-transparent rounded-s-none rounded-e-sm text-yellow"
                             isIconOnly
                             startContent={<FaSearch />}
                         />
@@ -100,14 +88,14 @@ export default function Header() {
                 />{' '}
             </div>
 
-            <div className="2xl:px-96 md:text-base sm:text-base text-xs w-full bg-white px-4 md:px-32 py-4 flex flex-row gap-4 text-zinc-600 justify-start">
-                <div className="cursor-pointer	">3C</div>
-                <div className="cursor-pointer	">家電</div>
-                <div className="cursor-pointer	">日用</div>
-                <div className="cursor-pointer	">食品</div>
-                <div className="cursor-pointer	">美妝</div>
-                <div className="cursor-pointer	">時尚</div>
-                <div className="cursor-pointer	">書店</div>
+            <div className="flex flex-row justify-start w-full gap-4 px-4 py-4 text-xs bg-white 2xl:px-96 md:text-base sm:text-base md:px-32 text-zinc-600">
+                <div className="cursor-pointer ">3C</div>
+                <div className="cursor-pointer ">家電</div>
+                <div className="cursor-pointer ">日用</div>
+                <div className="cursor-pointer ">食品</div>
+                <div className="cursor-pointer ">美妝</div>
+                <div className="cursor-pointer ">時尚</div>
+                <div className="cursor-pointer ">書店</div>
             </div>
         </>
     )
