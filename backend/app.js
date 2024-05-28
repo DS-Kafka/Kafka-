@@ -1,5 +1,6 @@
 const express = require('express');
 const purchase = require('./controllers/purchase');
+const result = require('./controllers/result');
 
 const app = express();
 const port = 3000;
@@ -19,6 +20,8 @@ app.get('/api/testDb',async (req, res) => {
 });
 
 app.post('/api/purchase', purchase);
+
+app.get('/api/result', result);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
