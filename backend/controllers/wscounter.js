@@ -1,9 +1,9 @@
 /**
- * 計算資料庫儲存筆數，在每次成功存入新的訂購資訊後傳送計數器
+ * 計算資料庫儲存筆數，在每次成功存入新的訂購資訊後更新計數器並傳送
  */
 
 /**
- * @typedef {number} counter - 成功存入資料庫計數器
+ * @typedef {number} counter - 資料成功存入的計數器
  */
 
 const WebSocket = require('ws');

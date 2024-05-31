@@ -20,7 +20,7 @@ const client = new kafka.KafkaClient();
  * @param {Express.Application} app - 消費者訂閱卡夫卡 buy_topic 主題的消息，並傳送資料到 dashboard 
  */
 
-module.exports = async function (app){
+module.exports = async function initwskafka() {
   const consumer = new Consumer(
     client,
     [{ topic: 'buy_topic', partition: 0 }],
