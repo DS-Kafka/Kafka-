@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: wurstmeister/kafka:latest
+    ports:
+      - "9092:9092"
+    expose:
+      - "9093"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:9093
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ds2024
+      MYSQL_DATABASE: ds
+      MYSQL_USER: ds
+      MYSQL_PASSWORD: ds2024
+    ports:
+      - "3311:3306"
+    volumes:
+      - ds_mysql_volume:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -u ds -pds2024"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ds_backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ds_backend_container
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    networks:
+      - ds_network
+    depends_on:
+      - mysql
+
+volumes:
+  ds_mysql_volume:
+
+networks:
+  ds_network:
+    name: ds_backend_network
