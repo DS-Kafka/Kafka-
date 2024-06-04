@@ -17,10 +17,10 @@ Env file is in the line group. Copy and paste the env file to the root dir layer
 
 
 # sendToKafka.js實作的功能：確保傳送資料至 Kafka 時，topic 已經是準備就緒的狀態。
-1. ensureTopicExists: 這個Function可以用來確保 Kafka 的 topic 存在，如果不存在的話，就創建 topic。
+1. ensureTopicExists：這個Function可以用來確保 Kafka 的 topic 存在，如果不存在的話，就創建 topic。
   這邊使用 AdminClient 來管理 topic。
   當 producer 準備就緒後，就可以使用 ensureTopicExists 來檢查或創建 topic。
-2. sendToKafka: 這是用來把資料傳送到 Kafka 的Function。
+2. sendToKafka：這是用來把資料傳送到 Kafka 的Function。
   這邊則是使用 producer.produce 來把資料傳送至指定的 topic。
   資料在傳送前，會先被轉換為 Buffer 格式。
 
@@ -32,7 +32,7 @@ Env file is in the line group. Copy and paste the env file to the root dir layer
   如果Request是有效的，那我們就會創建一個包含購買資訊的資料物件。
   這邊會使用 JSON.stringify 將資料物件轉換為 JSON 字符串。
 3. 傳送至 Kafka：
-  3我們可以透過上面的 sendToKafka 這個Function，去把資料傳送到 Kafka。
+   我們可以透過上面的 sendToKafka 這個Function，去把資料傳送到 Kafka。
   如果資料成功傳送的話，就回應 200 OK。
 
 
