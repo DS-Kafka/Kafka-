@@ -16,7 +16,7 @@ For a full Kafka setup demoed previously, please refer to [this](https://github.
 Env file is in the line group. Copy and paste the env file to the root dir layer~~
 
 
-# sendToKafka.js實作的功能：
+# sendToKafka.js實作的功能：確保傳送資料至 Kafka 時，topic 已經是準備就緒的狀態。
 1. ensureTopicExists: 這個Function是用來確保 Kafka 的 topic 存在，如果不存在的話，就創建 topic。
   這邊使用 AdminClient 來管理 topic。
   當 producer 準備就緒後，就可以使用 ensureTopicExists 來檢查或創建 topic。
