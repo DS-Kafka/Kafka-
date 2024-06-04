@@ -25,13 +25,13 @@ Env file is in the line group. Copy and paste the env file to the root dir layer
   資料在傳送前，會先被轉換為 Buffer 格式。
 
 # purchase.js實作的功能：處理購買請求，並將資料傳送至 Kafka：
-1. 資料驗證
+1. 資料驗證：
   這邊會先檢查Request的 buyerName 和 amount 是否有效。
   如果無效的話，就回應 400 Bad Request。
-2. 資料處理
+2. 資料處理：
   如果Request是有效的，那我們就會創建一個包含購買資訊的資料物件。
   這邊會使用 JSON.stringify 將資料物件轉換為 JSON 字符串。
-3. 傳送至 Kafka
+3. 傳送至 Kafka：
   3我們可以透過上面的 sendToKafka 這個Function，去把資料傳送到 Kafka。
   如果資料成功傳送的話，就回應 200 OK。
 
