@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/api/testDb',async (req, res) => {
-    const testQuery = 'INSERT INTO orders (buyerName) VALUES (?)';
+    const testQuery = 'INSERT INTO orders (name) VALUES (?)';
     const [rows] = await connectionPromise.execute(testQuery, ["Test"]);
     const id = rows.insertId;
     console.log(id);
