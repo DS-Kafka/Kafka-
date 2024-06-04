@@ -4,10 +4,16 @@
  * @typedef {Object} WebSocket - WebSocket 伺服器
  */
 
+require('dotenv').config();
 const WebSocket = require('ws');
 const kafka = require('kafka-node');
 const Consumer = kafka.Consumer; 
 const client = new kafka.KafkaClient();
+
+console.log("MYSQL_HOST:", process.env.MYSQL_HOST);
+console.log("MYSQL_USER:", process.env.MYSQL_USER);
+console.log("MYSQL_PASSWORD:", process.env.MYSQL_PASSWORD);
+console.log("MYSQL_DATABASE:", process.env.MYSQL_DATABASE);
 
 /**
  * @param {Array<Object>} payloads - 消費者訂閱的主題和分區
