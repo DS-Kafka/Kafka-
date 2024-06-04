@@ -12,6 +12,8 @@ const consumer = new kafka.KafkaConsumer({
   'metadata.broker.list': 'localhost:9092',
 });
 
+let count = 0;
+
 const consume = async () => {
   try {
     await consumer.connect();
@@ -31,6 +33,7 @@ const consume = async () => {
         const query = "INSERT INTO orders (id, name, timestamp) VALUES (?, ?, ?)";
         await mysqlConnection.query(query, [id, name, timestamp]);
         console.log('Data inserted into database successfully.');
+        count++;
       } catch (error) {
         console.error("Error processing message:", error.message);
       }
@@ -43,3 +46,6 @@ const consume = async () => {
 consume().catch((err) => {
   console.error("Error in consumer: " + err.message);
 });
+const getCount = () => {
+  return count;
+};
