@@ -35,6 +35,8 @@ Env file is in the line group. Copy and paste the env file to the root dir layer
    我們可以透過上面的 sendToKafka 這個Function，去把資料傳送到 Kafka。
   如果資料成功傳送的話，就回應 200 OK。
 
+# 計數器2
+加在consumer.js 裡面的getCount()
 
 # 測試步驟：在一個Terminal中啟動 Kafka 和 Zookeeper：
 
