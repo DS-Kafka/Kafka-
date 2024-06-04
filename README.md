@@ -19,13 +19,13 @@ Env file is in the line group. Copy and paste the env file to the root dir layer
 # 在一個Terminal中啟動 Kafka 和 Zookeeper：
 
 ```bash
-docker-compose up -d
+sudo docker-compose up -d
 ```
 
 # 在新的Terminal中啟動後端服務：
 
 ```bash
-docker-compose up --build ds_backend
+sudo docker-compose up --build ds_backend
 ```
 
 # （Optional）若出問題可以先關閉剛剛開好的內容：
