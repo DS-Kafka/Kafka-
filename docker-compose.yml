@@ -51,6 +51,7 @@ services:
       retries: 10
     networks:
       - ds_network
+
   nginx:
     image: nginx
     container_name: ds_nginx
