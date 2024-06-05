@@ -23,7 +23,9 @@ app.get('/api/testDb', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
+app.get('/api/test', async (req, res) => {
+    res.send("Hello World!");
+});
 app.post('/api/purchase', purchase);
 
 app.get('/api/result', result);
