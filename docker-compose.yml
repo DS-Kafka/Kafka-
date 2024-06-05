@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   ds_backend:
-      build: 
+      build:
         context: ./backend
         dockerfile: Dockerfile
       container_name: ds_backend_container
@@ -14,9 +14,9 @@ services:
       depends_on:
         mysql:
           condition: service_healthy
-      
+
   # ds_frontend:
-  #     build: 
+  #     build:
   #       context: ./frontend
   #       dockerfile: Dockerfile
   #     container_name: ds_frontend_container
@@ -26,7 +26,7 @@ services:
   #       - ds_network
 
   mysql:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     container_name: ${MYSQL_CONTAINER_NAME}
@@ -44,7 +44,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}      
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u${MYSQL_USER} -p${MYSQL_PASSWORD} && mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e 'show databases;'"]
       timeout: 25s
@@ -63,7 +63,16 @@ services:
       - ds_network
     depends_on:
       - ds_backend
-  
+
+  k6:
+    image: grafana/k6
+    container_name: k6_container
+    volumes:
+      - ./tests:/tests  # 確保這裡掛載了包含測試腳本的目錄
+    entrypoint: ["k6", "run", "/tests/test.js"]  # 確保路徑指向正確的測試腳本
+    networks:
+      - ds_network
+
 volumes:
   ds_mysql_volume:
     name: ${MYSQL_VOLUME_PATH}
