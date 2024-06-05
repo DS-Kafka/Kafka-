@@ -1,11 +1,13 @@
 const kafka = require('node-rdkafka');
-const mysql = require('mysql2');
-const mysqlConnection = mysql.createConnection({
-  host: 'ds_mysql',
-  user: 'ds',
-  password: 'ds2024',
-  database: 'ds'
-});
+// const mysql = require('mysql2');
+// const mysqlConnection = mysql.createConnection({
+//   host: 'ds_mysql',
+//   user: 'ds',
+//   password: 'ds2024',
+//   database: 'ds'
+// });
+
+const connectionPromise = require('./utils/db').connectionPromise;
 
 const consumer = new kafka.KafkaConsumer({
   'group.id': 'consumer-group',
@@ -29,7 +31,7 @@ const consume = async () => {
         const timestamp = new Date(buyData.buy_time * 1000).toISOString();
 
         const query = "INSERT INTO orders (id, name, timestamp) VALUES (?, ?, ?)";
-        await mysqlConnection.query(query, [id, name, timestamp]);
+        await connectionPromise.execute(query, [id, name, timestamp]);
         console.log('Data inserted into database successfully.');
       } catch (error) {
         console.error("Error processing message:", error.message);
