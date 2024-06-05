@@ -5,7 +5,6 @@
 /**
  * @typedef {number} counter - 資料成功存入的計數器
  */
-const WebSocket = require('ws');
 const mysql = require('mysql2/promise'); 
 require('dotenv').config();
 const wss = new WebSocket.Server({ port:8081 });

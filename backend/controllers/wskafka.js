@@ -5,7 +5,6 @@
  */
 
 require('dotenv').config();
-const WebSocket = require('ws');
 const kafka = require('kafka-node');
 const Consumer = kafka.Consumer; 
 const client = new kafka.KafkaClient();
