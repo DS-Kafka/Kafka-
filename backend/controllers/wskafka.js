@@ -8,6 +8,7 @@ require('dotenv').config();
 const kafka = require('kafka-node');
 const Consumer = kafka.Consumer; 
 const client = new kafka.KafkaClient();
+const WebSocket = require('ws'); 
 
 console.log("MYSQL_HOST:", process.env.MYSQL_HOST);
 console.log("MYSQL_USER:", process.env.MYSQL_USER);

@@ -5,6 +5,7 @@
 /**
  * @typedef {number} counter - 資料成功存入的計數器
  */
+const WebSocket = require('ws'); 
 const mysql = require('mysql2/promise'); 
 require('dotenv').config();
 const wss = new WebSocket.Server({ port:8081 });
@@ -53,7 +54,7 @@ async function checkInsert(req, res) {
         
         res.status(200).send({ id });
     } catch (error) {
-        console.error(error);
+        console.error('Database connection failed:', error);
         res.status(500).send('Internal Server Error');
     }
 }
