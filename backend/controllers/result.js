@@ -4,6 +4,7 @@
 //  * @param {import('express').Response} res
 //  * @returns
 //  */
+
 // module.exports = async function result(req, res) {
 //   // TODO: 連接資料庫並取回購買事實
 //   // 為了防止奇怪的人亂連的通關密語
@@ -55,16 +56,7 @@
 // }
 
 
-
-const mysql = require('mysql2/promise');
-
-const mysqlConfig = {
-  host: 'ds_mysql',
-  user: 'ds',
-  password: 'ds2024',
-  database: 'ds'
-};
-
+const connectionPromise = require('../utils/db').connectionPromise;
 /**
  *
  * @param {import('express').Request} req
@@ -77,8 +69,7 @@ module.exports = async function result(req, res) {
   }
 
   try {
-    const connection = await mysql.createConnection(mysqlConfig);
-    const [rows] = await connection.execute('SELECT * FROM orders');
+    const [rows] = await connectionPromise.execute('SELECT * FROM orders');
     await connection.end();
 
     return res.status(200).json({ buyers: rows });

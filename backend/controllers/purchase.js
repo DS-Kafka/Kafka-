@@ -7,7 +7,6 @@ const sendToKafka = require('../utils/sendToKafka');
  */
 
 /**
-
  * 讓使用者購買商品，並且會需要將購買事實傳送給 Kafka
  *
  * @param {import('express').Request<{}, {}, Order>} req

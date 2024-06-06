@@ -1,13 +1,15 @@
-FROM node:14
+FROM node:20.4-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY . .
+
+RUN apk add --no-cache python3 make g++ bash \
+    && ln -sf python3 /usr/bin/python
 
 RUN npm install
 
-COPY . .
-
 EXPOSE 3000
 
-CMD ["node", "app.js"]
+CMD ["npm", "run", "start"]
+
