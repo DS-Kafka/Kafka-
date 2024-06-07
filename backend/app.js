@@ -26,7 +26,7 @@ app.post('/api/purchase', purchase);
 
 app.get('/api/result', result);
 
-app.post('/api/insert', checkInsert);
+// app.post('/api/insert', checkInsert);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

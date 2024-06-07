@@ -5,19 +5,16 @@
 /**
  * @typedef {number} counter - 資料成功存入的計數器
  */
+
 const WebSocket = require('ws'); 
 const mysql = require('mysql2/promise'); 
-require('dotenv').config();
 const wss = new WebSocket.Server({ port:8081 });
+require('dotenv').config();
 
 let counter = 0;
 
-const connectionPromise = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE
-});
+const connectionPromise = require('../utils/db').connectionPromise;
+
 wss.on('connection', async ws =>{
     ws.send(counter.toString());
 });
@@ -49,7 +46,13 @@ async function checkInsert(req, res) {
         const query = 'INSERT INTO orders (name) VALUES (?)';
         const [rows] = await connectionPromise.execute(query, [name]);
         const id = rows.insertId;
-        
+
+        // get api: /api/testDb
+        // check connection with database 
+        // const axios = require('axios');
+        // const testDbResponse = await axios.get('http://localhost:3000/api/testDb');
+        // console.log(`Response from /api/testDb: ${testDbResponse.data}`);
+
         incrementCounter(); 
         
         res.status(200).send({ id });
