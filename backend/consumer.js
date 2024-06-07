@@ -40,3 +40,7 @@ consume().catch((err) => {
 const getCount = () => {
   return count;
 };
+// 新增匯出 getCount()
+module.exports = {
+  getCount
+};

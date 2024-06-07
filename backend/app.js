@@ -2,7 +2,6 @@ const express = require('express');
 const purchase = require('./controllers/purchase');
 const result = require('./controllers/result');
 const initwskafka = require('./controllers/wskafka');
-const { checkInsert, incrementCounter } = require('./controllers/wscounter');
 const WebSocket = require('ws');
 
 const app = express();
@@ -33,8 +32,6 @@ app.get('/api/test', async (req, res) => {
 app.post('/api/purchase', purchase);
 
 app.get('/api/result', result);
-
-// app.post('/api/insert', checkInsert);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
