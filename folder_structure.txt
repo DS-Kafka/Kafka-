@@ -1,0 +1,10 @@
+列出磁碟區 Acer 的資料夾 PATH
+磁碟區序號為 DA09-37AA
+C:.
+├─.vscode
+├─backend
+│  ├─controllers
+│  ├─scripts
+│  │  └─testDB
+│  └─utils
+└─frontend
