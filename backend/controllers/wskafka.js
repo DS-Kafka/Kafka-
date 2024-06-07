@@ -22,7 +22,7 @@ const consume = async () => {
 consume().catch((err) => {
   console.error("Error in consumer: " + err.message);
 });
-
+// 即時更新數值給 WebSocket Client
 wss.on('connection', ws => {
   ws.send(counter.toString()); 
   ws.on('message', message => {
