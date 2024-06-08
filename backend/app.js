@@ -1,7 +1,6 @@
 const express = require('express');
 const purchase = require('./controllers/purchase');
 const result = require('./controllers/result');
-const initwskafka = require('./controllers/wskafka');
 const WebSocket = require('ws');
 
 const app = express();

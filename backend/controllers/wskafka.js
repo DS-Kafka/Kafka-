@@ -29,5 +29,7 @@ wss.on('connection', ws => {
     console.log(`Received message => ${message}`);
   });
 });
-
+wss.on('close', () => {
+  console.log('Client disconnected');
+});
 console.log('WebSocket server is running on ws://localhost:8080');
