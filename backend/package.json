@@ -4,7 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start:app": "node app.js",
+    "start:consumer": "node consumer.js",
+    "start": "npm run start:app && npm run start:consumer"
   },
   "author": "",
   "license": "ISC",
