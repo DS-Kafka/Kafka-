@@ -12,26 +12,19 @@ const connectionPromise = require('./utils/db').connectionPromise;
 app.use(cors());
 app.use(express.json());
 
-app.get('/api/testDb', async (req, res) => {
-  try {
-    const connection = await connectionPromise;
+app.get('/api/testDb',async (req, res) => {
     const testQuery = 'INSERT INTO orders (name) VALUES (?)';
-    const [rows] = await connection.execute(testQuery, ["Test"]);
+    const [rows] = await connectionPromise.execute(testQuery, ["Test"]);
     const id = rows.insertId;
     console.log(id);
     res.send(`${id}`);
-  } catch (error) {
-    console.error('Error in /api/testDb:', error);
-    res.status(500).send('Internal Server Error');
-  }
 });
-app.get('/api/test', async (req, res) => {
-    res.send("Hello World!");
-});
+
 app.post('/api/purchase', purchase);
 
 app.get('/api/result', result);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
+    initwskafka();
 });

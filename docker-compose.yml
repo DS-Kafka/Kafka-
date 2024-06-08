@@ -7,8 +7,6 @@ services:
         context: ./backend
         dockerfile: Dockerfile
       container_name: ds_backend_container
-      ports:
-        - "3000:3000"
       env_file:
         - .env
       networks:
@@ -26,34 +24,13 @@ services:
   #       - .env
   #     networks:
   #       - ds_network
-  zookeeper:
-    image: wurstmeister/zookeeper:3.4.6
-    ports:
-      - "2181:2181"
-    networks:
-      - ds_network
 
-  kafka:
-    image: wurstmeister/kafka:latest
-    ports:
-      - "9092:9092"
-    expose:
-      - "9093"
-    environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:9093
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - ds_network
   mysql:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: ${MYSQL_CONTAINER_NAME}
-    # platform: linux/amd64
+    platform: linux/amd64
     stdin_open: true
     tty: true
     restart: always
@@ -74,7 +51,6 @@ services:
       retries: 10
     networks:
       - ds_network
-
   nginx:
     image: nginx
     container_name: ds_nginx
