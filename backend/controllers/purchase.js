@@ -16,7 +16,7 @@ module.exports = async function purchase(req, res) {
   if (typeof req.body.buyerName !== 'string' || req.body.buyerName.length === 0 || Number.isInteger(req.body.amount) === false || req.body.amount < 1) {
     return res.status(400).send('Bad Request');
   }
-  now = Date.now();
+  const now = Date.now();
   console.log(`${req.body.buyerName} 買了 ${req.body.amount} 件商品`);
   // TODO: 這裡會需要去增加「API接收到請求」的計數器
   // TODO: 這裡會跟 Kafka 溝通

@@ -69,9 +69,9 @@ module.exports = async function result(req, res) {
   }
 
   try {
-    const [rows] = await connectionPromise.execute('SELECT * FROM orders');
-    await connection.end();
-
+    const connection = await connectionPromise; // 修改：從連線池獲取連線
+    const [rows] = await connection.execute('SELECT * FROM orders');
+    connection.release(); // 修改：釋放連線回連線池
     return res.status(200).json({ buyers: rows });
   } catch (error) {
     console.error('Error fetching data from database:', error);

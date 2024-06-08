@@ -1,35 +1,46 @@
-const express = require('express');
-const purchase = require('./controllers/purchase');
-const result = require('./controllers/result');
+const { Producer, AdminClient } = require('node-rdkafka');
+const topicName = 'buy_topic';
 
-const app = express();
-const port = 3000;
-const cors = require('cors');
-// db connection example
-const connectionPromise = require('./utils/db').connectionPromise;
-app.use(cors());
-app.use(express.json());
-
-app.get('/api/testDb', async (req, res) => {
-  try {
-    const connection = await connectionPromise;
-    const testQuery = 'INSERT INTO orders (name) VALUES (?)';
-    const [rows] = await connection.execute(testQuery, ["Test"]);
-    const id = rows.insertId;
-    console.log(id);
-    res.send(`${id}`);
-  } catch (error) {
-    console.error('Error in /api/testDb:', error);
-    res.status(500).send('Internal Server Error');
-  }
+const producer = new Producer({
+   'metadata.broker.list': 'kafka:9092',  // 使用 Docker 內部名稱
+   'dr_cb': true
 });
-app.get('/api/test', async (req, res) => {
-    res.send("Hello World!");
-});
-app.post('/api/purchase', purchase);
 
-app.get('/api/result', result);
+let isProducerReady = false;
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+producer.on('ready', function() {
+   console.log('Producer ready');
+   isProducerReady = true;
+   ensureTopicExists(topicName);
 });
+
+producer.on('event.error', function(err) {
+   console.error('Error from producer:', err);
+});
+
+producer.connect();
+
+async function ensureTopicExists(topic) {
+   const admin = AdminClient.create({
+       'client.id': 'admin',
+       'metadata.broker.list': 'kafka:9092'  // 使用 Docker 內部名稱
+   });
+
+   admin.createTopic({
+       topic,
+       num_partitions: 1,
+       replication_factor: 1
+   }, (err, result) => {
+       if (err && err.message !== 'Topic already exists') {
+           console.error('Error creating topic:', err);
+       } else {
+           console.log(`Topic "${topic}" exists or created successfully.`);
+       }
+       admin.disconnect();
+   });
+}
+
+module.exports = {
+   producer,
+   isProducerReady // 匯出 isProducerReady
+};
