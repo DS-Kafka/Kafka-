@@ -12,19 +12,22 @@ const sendToKafka = require('../utils/sendToKafka');
 * @param {import('express').Response} res
 */
 module.exports = async function purchase(req, res) {
- if (typeof req.body.name !== 'string' || req.body.name.length === 0) {
-   return res.status(400).send('Bad Request');
- }
- const now = Date.now();
- console.log(`${req.body.name} 買了商品`);
- // TODO: 這裡會需要去增加「API接收到請求」的計數器
- // TODO: 這裡會跟 Kafka 溝通
- const data = JSON.stringify({
-   buy_name: req.body.name,
-   buy_time: Math.floor(now / 1000)
- });
-
- await sendToKafka(data);
-
- return res.status(200).send('OK');
+  if (typeof req.body.name !== 'string' || req.body.name.length === 0) {
+    return res.status(400).send('Bad Request');
+  }
+  const now = Date.now();
+  console.log(`${req.body.name} 買了商品`);
+  // TODO: 這裡會需要去增加「API接收到請求」的計數器
+  // TODO: 這裡會跟 Kafka 溝通
+  const data = JSON.stringify({
+    buy_name: req.body.name,
+    buy_time: Math.floor(now / 1000)
+  });
+  try {
+    await sendToKafka.sendToKafka(data);
+    return res.status(200).send('OK');
+  } catch (error) {
+    console.error('Failed to send purchase details to Kafka', error);
+    res.status(500).send('Failed to record purchase');
+  }
 }

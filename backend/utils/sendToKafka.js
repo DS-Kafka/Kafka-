@@ -1,22 +1,26 @@
 const { Producer, AdminClient } = require('node-rdkafka');
 const topicName = 'buy_topic';
+let producer = null;
 
-const producer = new Producer({
-   'metadata.broker.list': 'kafka:9092',  // 使用 Docker 內部名稱
-   'dr_cb': true
-});
+function connectProducer() {
+    if (!producer) {
+        producer = new Producer({
+            'metadata.broker.list': 'kafka:9092',
+            'dr_cb': true
+        });
 
-producer.connect();
+        producer.connect();
 
-producer.on('ready', function () {
-   console.log('Producer ready');
-   ensureTopicExists(topicName, producer);
-});
+        producer.on('ready', function () {
+            console.log('Producer ready');
+            ensureTopicExists(topicName, producer);
+        });
 
-producer.on('event.error', function (err) {
-   console.error('Error from producer:', err);
-});
-
+        producer.on('event.error', function (err) {
+            console.error('Error from producer:', err);
+        });
+    }
+}
 async function ensureTopicExists(topic, producer) {
    const admin = AdminClient.create({
        'client.id': 'admin',
@@ -36,20 +40,24 @@ async function ensureTopicExists(topic, producer) {
        admin.disconnect();
    });
 }
-
 async function sendToKafka(data) {
-   try {
-       producer.produce(
-           topicName,
-           null,
-           Buffer.from(data),
-           null,
-           Date.now()
-       );
-       console.log('Data sent to Kafka topic successfully.');
-   } catch (error) {
-       console.error('Error sending data to Kafka:', error);
-   }
+    if (!producer) {
+        console.error('Producer is not connected.');
+        return;
+    }
+
+    try {
+        producer.produce(
+            topicName,
+            null,
+            Buffer.from(data),
+            null,
+            Date.now()
+        );
+        console.log('Data sent to Kafka topic successfully.');
+    } catch (error) {
+        console.error('Error sending data to Kafka:', error);
+    }
 }
 
-module.exports = sendToKafka;
+module.exports = { sendToKafka, connectProducer };

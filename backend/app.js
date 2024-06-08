@@ -1,6 +1,8 @@
 const express = require('express');
 const purchase = require('./controllers/purchase');
 const result = require('./controllers/result');
+const { connectProducer } = require('./utils/sendToKafka');
+const { connectConsumer } = require('./consumer');
 
 const app = express();
 const port = 3000;
@@ -9,6 +11,8 @@ const connectionPromise = require('./utils/db').connectionPromise;
 app.use(cors());
 app.use(express.json());
 
+connectProducer();
+connectConsumer();
 app.get('/api/testDb', async (req, res) => {
   try {
     const connection = await connectionPromise;
