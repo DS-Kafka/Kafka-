@@ -16,7 +16,10 @@ services:
       depends_on:
         mysql:
           condition: service_healthy
-      
+      # command: sh -c "node backend/app.js & node backend/consumer.js" 
+      # command: sh -c "node /app/backend/app.js & node /app/backend/consumer.js"
+      # command: sh -c "cd backend && node app.js & node consumer.js"
+
   # ds_frontend:
   #     build: 
   #       context: ./frontend

@@ -59,7 +59,7 @@ docker-compose down
 # 在新的Terminal測試 /api/purchase API 是否可以成功接收到請求，並將資料正確傳送至 Kafka：
 
 ```bash
-curl -X POST http://localhost:3000/api/purchase -H "Content-Type: application/json" -d "{\"buyerName\": \"Alice\", \"amount\": 1}"
+curl -X POST http://localhost:3000/api/purchase -H "Content-Type: application/json" -d '{"name": "Alice"}'
 ```
 
 # 進入 MySQL Container 並檢查資料庫：
