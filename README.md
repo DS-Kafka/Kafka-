@@ -16,6 +16,24 @@ For a full Kafka setup demoed previously, please refer to [this](https://github.
 Env file is in the line group. Copy and paste the env file to the root dir layer~~
 
 
+# How to run
+
+Run the following command to start the frontend, backend containers and DB container(but now just the backend and db container):
+```bash
+sudo docker-compose up -d --build
+```
+# DB set
+Every time you change the DB data ex: add a new table, add a new column, change a column type, add a new data(order..), etc. You need to run the following command to update the DB backup file. DB is built up based on the data in the backup file.
+```bash
+cd backend/scripts/testDB
+sh backup-db.sh
+```
+
+For a full Kafka setup demoed previously, please refer to [this](https://github.com/timsu92/kafka_example.git).
+
+Env file is in the line group. Copy and paste the env file to the root dir layer~~
+
+
 # sendToKafka.js實作的功能：確保傳送資料至 Kafka 時，topic 已經是準備就緒的狀態。
 1. ensureTopicExists：這個Function可以用來確保 Kafka 的 topic 存在，如果不存在的話，就創建 topic。
   這邊使用 AdminClient 來管理 topic。
@@ -91,3 +109,4 @@ INSERT INTO orders (name) VALUES ('Test');
 ```bash
 SELECT * FROM orders;
 ```
+
