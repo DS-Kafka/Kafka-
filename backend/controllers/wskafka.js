@@ -1,4 +1,4 @@
-const kafka = require('node-rdkafka');
+// const kafka = require('node-rdkafka');
 require('dotenv').config();
 const WebSocket = require('ws');
 
@@ -11,7 +11,7 @@ const consume = async () => {
     console.log('successfully connected to kafka');
     consumer.subscribe(['buy_topic']);
     console.log('successfully subscribed to topic');
-    // 監聽到新的卡夫卡topic消息時計數器加一
+    // 監聽到新的卡夫卡 topic 消息時計數器加一
     consumer.on('data', () => counter++);
   } 
   catch (error) {
