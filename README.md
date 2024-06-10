@@ -34,7 +34,7 @@ For a full Kafka setup demoed previously, please refer to [this](https://github.
 Env file is in the line group. Copy and paste the env file to the root dir layer~~
 
 
-# 測試步驟：在一個Terminal中啟動 Kafka 和 Zookeeper：
+# 測試步驟：在一個Terminal中啟動 Docker：
 ```bash
 sudo docker-compose up -d
 ```
