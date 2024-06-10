@@ -39,26 +39,21 @@ export default function Product(props: any) {
             }, 1000)
         }
     }
-    const { status } = props
+    const { status, productname, id, price, originalPrice, image } = props
     return (
-        <div className={`${status === 'out' && `text-zinc-600`}w-full flex flex-col gap-1 justify-center items-start`}>
+        <div className={`${status === 'out' && `text-zinc-600`}w-full flex flex-col gap-1 justify-between items-start`}>
             <div className="relative w-full border-1 border-gray-200 rounded-xl items-center justify-center flex bg-white">
                 {status === 'out' && (
                     <div className="bg-gray-300/80 rounded-full z-10 absolute h-16 items-center justify-center flex w-16">
                         已售完
                     </div>
                 )}
-                <Image alt="Product" src="/product.png" width={150} height={150} className="rounded-xl" />
+                <Image alt="Product" src={image} width={150} height={150} className="rounded-xl" />
             </div>
-            <div className={`${status === 'out' ? `text-zinc-600` : `text-black`}`}>
-                Dyson V15 Detect Absolute 無線吸塵器
-            </div>
-            <div className={`${status === 'out' ? `text-zinc-600` : `text-red`} font-bold`}>$19,900</div>
+            <div className={`${status === 'out' ? `text-zinc-600` : `text-black`} line-clamp-2	`}>{productname} </div>
+            <div className={`${status === 'out' ? `text-zinc-600` : `text-red`} font-bold`}>${price}</div>
             <div className="flex flex-row items-center justify-between w-full">
-                <div className="line-through text-zinc-500 text-xs">$26,900</div>
-                {/* <div className={`${status === 'out' ? `text-zinc-600` : `text-red`} text-xs`}>
-                    剩餘數量:{status === 'out' ? `0` : `5`}
-                </div> */}
+                <div className="line-through text-zinc-500 text-xs">${originalPrice}</div>
             </div>
             <Button
                 className={`${status === 'out' ? `bg-zinc-300` : `bg-yellow`} w-full text-white font-bold`}
@@ -78,10 +73,7 @@ export default function Product(props: any) {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">
-                                {' '}
-                                Dyson V15 Detect Absolute 無線吸塵器
-                            </ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">{productname}</ModalHeader>
                             <ModalBody>
                                 <div className="flex flex-row justify-start items-end gap-4">
                                     <div className="relative w-1/2 border-1 border-gray-200 rounded-xl items-center justify-center flex bg-white">
@@ -95,9 +87,9 @@ export default function Product(props: any) {
                                     </div>
                                     <div>
                                         <div className={`${status === 'out' ? `text-zinc-600` : `text-red`} font-bold`}>
-                                            $19,900
+                                            ${price}
                                         </div>
-                                        <div className="line-through text-zinc-500 text-xs">$26,900</div>
+                                        <div className="line-through text-zinc-500 text-xs">${originalPrice}</div>
                                     </div>
                                 </div>
                                 <div className="gap-4 flex flex-col">
