@@ -26,5 +26,4 @@ app.get('/api/result', result);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-    initwskafka();
 });
