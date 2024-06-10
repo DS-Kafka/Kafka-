@@ -3,6 +3,12 @@ const connectionPromise = require('./utils/db').connectionPromise;
 
 let consumer = null;
 
+let count = 0;
+
+const getCount = () => {
+  return count;
+};
+
 function connectConsumer() {
   if (!consumer) {
     consumer = new Consumer({
@@ -25,6 +31,7 @@ function connectConsumer() {
         const insertQuery = 'INSERT INTO orders (name, timestamp) VALUES (?, ?)';
         await connection.execute(insertQuery, [parsedData.buy_name, new Date(parsedData.buy_time * 1000)]);
         console.log('Data inserted into orders:', parsedData);
+        count++;
       } catch (error) {
         console.error('Error inserting data into orders:', error);
       }
@@ -36,4 +43,4 @@ function connectConsumer() {
   }
 }
 
-module.exports = { connectConsumer };
+module.exports = { connectConsumer, getCount };
