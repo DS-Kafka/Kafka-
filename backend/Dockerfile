@@ -5,9 +5,11 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++ bash \
     && ln -sf python3 /usr/bin/python
 
-COPY . .
+COPY package.json package-lock.json ./
 
 RUN npm install
+
+COPY . .
 
 EXPOSE 3000
 
