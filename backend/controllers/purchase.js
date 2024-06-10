@@ -1,5 +1,4 @@
 const sendToKafka = require('../utils/sendToKafka');
-
 /**
 * @typedef {Object} Order
 * @property {string} name 購買者名稱
@@ -19,7 +18,7 @@ module.exports = async function purchase(req, res) {
   console.log(`${req.body.name} 買了商品`);
   // TODO: 這裡會需要去增加「API接收到請求」的計數器
   // TODO: 這裡會跟 Kafka 溝通
-  const data = JSON.stringify({
+const data = JSON.stringify({
     buy_name: req.body.name,
     buy_time: Math.floor(now / 1000)
   });

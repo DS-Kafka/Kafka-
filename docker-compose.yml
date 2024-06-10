@@ -3,12 +3,12 @@
 services:
 
   ds_backend:
-      build: 
+      build:
         context: ./backend
         dockerfile: Dockerfile
       container_name: ds_backend_container
       ports:
-        - "3000:3000"
+        - "3000:3000" #新增這行
       env_file:
         - .env
       networks:
@@ -16,12 +16,9 @@ services:
       depends_on:
         mysql:
           condition: service_healthy
-      # command: sh -c "node backend/app.js & node backend/consumer.js" 
-      # command: sh -c "node /app/backend/app.js & node /app/backend/consumer.js"
-      # command: sh -c "cd backend && node app.js & node consumer.js"
 
   # ds_frontend:
-  #     build: 
+  #     build:
   #       context: ./frontend
   #       dockerfile: Dockerfile
   #     container_name: ds_frontend_container
@@ -57,11 +54,12 @@ services:
     networks:
       - ds_network
   mysql:
-    build: 
+    image: mysql:8.0 #新增這行
+    build:
       context: .
       dockerfile: Dockerfile
     container_name: ${MYSQL_CONTAINER_NAME}
-    # platform: linux/amd64
+    platform: linux/amd64
     stdin_open: true
     tty: true
     restart: always
@@ -75,14 +73,13 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}      
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u${MYSQL_USER} -p${MYSQL_PASSWORD} && mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e 'show databases;'"]
       timeout: 25s
       retries: 10
     networks:
       - ds_network
-
   nginx:
     image: nginx
     container_name: ds_nginx
@@ -95,7 +92,16 @@ services:
       - ds_network
     depends_on:
       - ds_backend
-  
+
+  k6:
+    image: grafana/k6
+    container_name: k6_container
+    volumes:
+      - ./tests:/tests  # 確保這裡掛載了包含測試腳本的目錄
+    entrypoint: ["k6", "run", "/tests/test.js"]  # 確保路徑指向正確的測試腳本
+    networks:
+      - ds_network
+
 volumes:
   ds_mysql_volume:
     name: ${MYSQL_VOLUME_PATH}

@@ -7,6 +7,8 @@ const { connectConsumer } = require('./consumer');
 const app = express();
 const port = 3000;
 const cors = require('cors');
+
+// db connection example
 const connectionPromise = require('./utils/db').connectionPromise;
 app.use(cors());
 app.use(express.json());
@@ -29,6 +31,7 @@ app.get('/api/testDb', async (req, res) => {
 app.get('/api/test', async (req, res) => {
    res.send("Hello World!");
 });
+
 app.post('/api/purchase', purchase);
 
 app.get('/api/result', result);

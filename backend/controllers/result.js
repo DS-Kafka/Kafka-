@@ -1,16 +1,27 @@
-// /**
-//  *
-//  * @param {import('express').Request} req
-//  * @param {import('express').Response} res
-//  * @returns
-//  */
+const connectionPromise = require('../utils/db').connectionPromise;
+/**
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns
+ */
+module.exports = async function result(req, res) {
+  // TODO: 連接資料庫並取回購買事實
+  // 為了防止奇怪的人亂連的通關密語
+  if (req.body.sec !== 'animated-octo-engine') {
+    return res.status(403).send('Forbidden');
+  }
 
-// module.exports = async function result(req, res) {
-//   // TODO: 連接資料庫並取回購買事實
-//   // 為了防止奇怪的人亂連的通關密語
-//   if (req.body.sec !== 'animated-octo-engine') {
-//     return res.status(403).send('Forbidden');
-//   }
+  try {
+    const connection = await connectionPromise; // 修改：從連線池獲取連線
+    const [rows] = await connection.execute('SELECT * FROM orders');
+    connection.release(); // 修改：釋放連線回連線池
+    return res.status(200).json({ buyers: rows });
+  } catch (error) {
+    console.error('Error fetching data from database:', error);
+    return res.status(500).send('Internal Server Error');
+  }
+
 //   return res.status(200).json({ buyers: [
 //     { name: 'Tim', timestamp: new Date(), amount: 10 },
 //     { name: 'Penny', timestamp: new Date(), amount: 20 },
@@ -53,28 +64,4 @@
 //     { name: 'Nicole', timestamp: new Date(), amount: 390 },
 //     { name: 'Andrew', timestamp: new Date(), amount: 400 },
 //   ]});
-// }
-
-
-const connectionPromise = require('../utils/db').connectionPromise;
-/**
- *
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @returns
- */
-module.exports = async function result(req, res) {
-  if (req.body.sec !== 'animated-octo-engine') {
-    return res.status(403).send('Forbidden');
-  }
-
-  try {
-    const connection = await connectionPromise; // 修改：從連線池獲取連線
-    const [rows] = await connection.execute('SELECT * FROM orders');
-    connection.release(); // 修改：釋放連線回連線池
-    return res.status(200).json({ buyers: rows });
-  } catch (error) {
-    console.error('Error fetching data from database:', error);
-    return res.status(500).send('Internal Server Error');
-  }
 }
