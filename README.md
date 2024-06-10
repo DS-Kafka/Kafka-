@@ -62,6 +62,8 @@ sudo chmod -R 755 ~/.docker
 sudo docker-compose up --build ds_backend
 ```
 <img width="783" alt="截圖 2024-06-11 凌晨12 51 24" src="https://github.com/DS-Kafka/Kafka-/assets/90824069/c5322e76-cc6b-4cf2-91df-73af4f0bd506">
+註解：如果開啟時有 "Topic 'buy_topic' already exists" 的錯誤，應該不會影響系統的正常運行。
+
 
 # （Optional）若出問題可以先關閉剛剛開好的內容：
 ```bash
@@ -87,8 +89,6 @@ docker exec -it kafka--kafka-1 /bin/bash
 ```bash
 kafka-topics.sh --bootstrap-server localhost:9092 --list
 ```
-
-註解：如果開啟時有 "Topic 'buy_topic' already exists" 的錯誤，應該不會影響系統的正常運行。
 
 # 也可以檢查後端的Server Log，看請求有沒有順利發給Kafka：
 ```bash
