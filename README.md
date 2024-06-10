@@ -61,6 +61,7 @@ sudo chmod -R 755 ~/.docker
 ```bash
 sudo docker-compose up --build ds_backend
 ```
+<img width="783" alt="截圖 2024-06-11 凌晨12 51 24" src="https://github.com/DS-Kafka/Kafka-/assets/90824069/c5322e76-cc6b-4cf2-91df-73af4f0bd506">
 
 # （Optional）若出問題可以先關閉剛剛開好的內容：
 ```bash
@@ -71,6 +72,11 @@ docker-compose down
 ```bash
 curl -X POST http://localhost:3000/api/purchase -H "Content-Type: application/json" -d '{"name": "Alice"}'
 ```
+```bash
+curl -X POST http://localhost:3000/api/purchase -H "Content-Type: application/json" -d '{"name": "Bob"}'
+```
+
+<img width="796" alt="截圖 2024-06-11 凌晨12 52 10" src="https://github.com/DS-Kafka/Kafka-/assets/90824069/503d751a-7dff-4cb5-9e7e-e66e09068e75">
 
 # 可以使用以下命令進入 Kafka 容器：
 ```bash
@@ -112,4 +118,5 @@ INSERT INTO orders (name) VALUES ('Test');
 ```bash
 SELECT * FROM orders;
 ```
+<img width="803" alt="截圖 2024-06-11 凌晨12 53 11" src="https://github.com/DS-Kafka/Kafka-/assets/90824069/327e6dcd-5d8e-4b64-95bf-85f001121635">
 
