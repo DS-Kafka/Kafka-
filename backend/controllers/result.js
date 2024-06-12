@@ -7,14 +7,9 @@ const connectionPromise = require('../utils/db').connectionPromise;
  */
 module.exports = async function result(req, res) {
   // TODO: 連接資料庫並取回購買事實
-  // 為了防止奇怪的人亂連的通關密語
-  if (req.body.sec !== 'animated-octo-engine') {
-    return res.status(403).send('Forbidden');
-  }
-
   try {
     const connection = await connectionPromise; // 修改：從連線池獲取連線
-    const [rows] = await connection.execute('SELECT * FROM orders');
+    const [rows] = await connection.execute('SELECT name, timestamp FROM orders ORDER BY timestamp ASC');
     // connection.release(); // 修改：釋放連線回連線池
     return res.status(200).json({ buyers: rows });
   } catch (error) {
