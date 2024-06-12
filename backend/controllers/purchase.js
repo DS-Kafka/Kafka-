@@ -4,12 +4,14 @@ const sendToKafka = require('../utils/sendToKafka');
 * @property {string} name 購買者名稱
 */
 
+
 /**
 * 讓使用者購買商品，並且會需要將購買事實傳送給 Kafka
 *
 * @param {import('express').Request<{}, {}, Order>} req
 * @param {import('express').Response} res
 */
+
 module.exports = async function purchase(req, res) {
   if (typeof req.body.name !== 'string' || req.body.name.length === 0) {
     return res.status(400).send('Bad Request');
