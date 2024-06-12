@@ -1,93 +1,40 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
 
 export default function Linechart() {
+  const chartRef = useRef<echarts.ECharts | null>(null);
+  const ws = useRef<WebSocket | null>(null);
+  const data = useRef<Array<[string, number]>>([]);
+
   useEffect(() => {
     const chartDom = document.getElementById("main");
     const myChart = echarts.init(chartDom);
-
-    let base = +new Date(2016, 9, 3);
-    let oneDay = 24 * 3600 * 1000;
-    let valueBase = Math.random() * 300;
-    let valueBase2 = Math.random() * 50;
-    let data = [];
-    let data2 = [];
-    for (var i = 1; i < 10; i++) {
-      var now = new Date((base += oneDay));
-      var dayStr = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join(
-        "-"
-      );
-      valueBase = Math.round((Math.random() - 0.5) * 20 + valueBase);
-      valueBase <= 0 && (valueBase = Math.random() * 300);
-      data.push([dayStr, valueBase]);
-      valueBase2 = Math.round((Math.random() - 0.5) * 20 + valueBase2);
-      valueBase2 <= 0 && (valueBase2 = Math.random() * 50);
-      data2.push([dayStr, valueBase2]);
-    }
+    chartRef.current = myChart;
 
     const option = {
       title: {
         left: "center",
-        text: "Tootip and dataZoom on Mobile Device",
+        text: "Tooltip and dataZoom on Mobile Device",
       },
       legend: {
         top: "bottom",
-        data: ["Intention"],
+        data: ["Count"],
       },
       tooltip: {
-        triggerOn: "none",
-        position: function (pt: any) {
-          return [pt[0], 130];
-        },
+        trigger: "axis",
         formatter: function (params: any) {
           const { seriesName, value } = params[0];
           return `${seriesName}: ${value[1]}`;
         },
       },
-      toolbox: {
-        left: "center",
-        itemSize: 25,
-        top: 55,
-        feature: {
-          dataZoom: {
-            yAxisIndex: "none",
-          },
-          restore: {},
-        },
-      },
       xAxis: {
         type: "time",
-        axisPointer: {
-          value: "2016-10-7",
-          snap: true,
-          lineStyle: {
-            color: "#7581BD",
-            width: 2,
-          },
-          label: {
-            show: true,
-            formatter: function (params: any) {
-              return echarts.format.formatTime("yyyy-MM-dd", params.value);
-            },
-            backgroundColor: "#7581BD",
-          },
-          handle: {
-            show: true,
-            color: "#7581BD",
-          },
-        },
         splitLine: {
           show: false,
         },
       },
       yAxis: {
         type: "value",
-        axisTick: {
-          inside: true,
-        },
-        splitLine: {
-          show: false,
-        },
         axisLabel: {
           inside: true,
           formatter: "{value}\n",
@@ -108,7 +55,7 @@ export default function Linechart() {
       ],
       series: [
         {
-          name: "Fake Data",
+          name: "Count",
           type: "line",
           smooth: true,
           symbol: "circle",
@@ -117,58 +64,36 @@ export default function Linechart() {
           itemStyle: {
             color: "#0770FF",
           },
-          stack: "a",
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              {
-                offset: 0,
-                color: "rgba(58,77,233,0.8)",
-              },
-              {
-                offset: 1,
-                color: "rgba(58,77,233,0.3)",
-              },
-            ]),
-          },
-          data: data,
-        },
-        {
-          name: "Fake Data",
-          type: "line",
-          smooth: true,
-          stack: "a",
-          symbol: "circle",
-          symbolSize: 5,
-          sampling: "average",
-          itemStyle: {
-            color: "#F2597F",
-          },
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              {
-                offset: 0,
-                color: "rgba(213,72,120,0.8)",
-              },
-              {
-                offset: 1,
-                color: "rgba(213,72,120,0.3)",
-              },
-            ]),
-          },
-          data: data2,
+          data: data.current,
         },
       ],
     };
 
     myChart.setOption(option);
 
-    myChart.on("click", (params: any) => {
-      const { seriesName, value } = params;
-      alert(`${seriesName}: ${value[1]}`);
-    });
+    ws.current = new WebSocket("ws://localhost:8081");
+
+    ws.current.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      const newDate = new Date();
+      data.current.push([newDate.toISOString(), message.count]);
+      if (data.current.length > 50) {
+        data.current.shift();
+      }
+      myChart.setOption({
+        series: [
+          {
+            data: data.current,
+          },
+        ],
+      });
+    };
 
     return () => {
       myChart.dispose();
+      if (ws.current) {
+        ws.current.close();
+      }
     };
   }, []);
 

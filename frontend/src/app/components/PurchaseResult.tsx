@@ -12,34 +12,36 @@ import {
 } from "@nextui-org/react";
 import useSWR from "swr";
 
-const fetcher = (...args: string[]) => fetch(args[0]).then((res) => res.json());
-
-const localData = {
-  count: 82,
-  results: [
-    {
-      name: "Luke Skywalker",
-      height: "172",
-      mass: "77",
-      birth_year: "19BBY",
+const fetcher = (url: any) => {
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
     },
-    // 其他数据...
-  ],
+  }).then((res) => res.json());
 };
+// const localData = {
+//   count: 82,
+//   results: [
+//     {
+//       name: "Luke Skywalker",
+//       height: "172",
+//       mass: "77",
+//       birth_year: "19BBY",
+//     },
+//     // 其他数据...
+//   ],
+// };
 
 export default function App() {
   const [page, setPage] = React.useState(1);
 
-  const { data, isLoading } = useSWR(
-    `https://swapi.py4e.com/api/people?page=${page}`,
-    fetcher,
-    {
-      keepPreviousData: true,
-    }
-  );
+  const { data, isLoading } = useSWR(`http://127.0.0.1/api/result`, fetcher, {
+    keepPreviousData: true,
+  });
 
   // 使用本地数据或者API返回的数据，取决于 data 是否为 undefined
-  const rowData = data || localData;
+  const rowData = data;
 
   const rowsPerPage = 10;
 
@@ -71,9 +73,8 @@ export default function App() {
     >
       <TableHeader>
         <TableColumn key="name">Name</TableColumn>
-        <TableColumn key="height">Height</TableColumn>
-        <TableColumn key="mass">Mass</TableColumn>
-        <TableColumn key="birth_year">Birth year</TableColumn>
+        <TableColumn key="timestamp">timestamp</TableColumn>
+        <TableColumn key="amount">amount</TableColumn>
       </TableHeader>
       <TableBody
         items={rowData?.results ?? []}
