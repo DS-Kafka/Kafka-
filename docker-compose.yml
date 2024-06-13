@@ -7,8 +7,6 @@ services:
         context: ./backend
         dockerfile: Dockerfile
       container_name: ds_backend_container
-      ports:
-        - "3000:3000" #新增這行
       env_file:
         - .env
       networks:

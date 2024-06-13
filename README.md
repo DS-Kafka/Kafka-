@@ -73,10 +73,10 @@ docker-compose down
 
 # 在新的Terminal測試 /api/purchase API 是否可以成功接收到請求，並將資料正確傳送至 Kafka：
 ```bash
-curl -X POST http://localhost:3000/api/purchase -H "Content-Type: application/json" -d '{"name": "Alice"}'
+curl -X POST http://localhost/api/purchase -H "Content-Type: application/json" -d '{"name": "Alice"}'
 ```
 ```bash
-curl -X POST http://localhost:3000/api/purchase -H "Content-Type: application/json" -d '{"name": "Bob"}'
+curl -X POST http://localhost/api/purchase -H "Content-Type: application/json" -d '{"name": "Bob"}'
 ```
 
 <img width="796" alt="截圖 2024-06-11 凌晨12 52 10" src="https://github.com/DS-Kafka/Kafka-/assets/90824069/503d751a-7dff-4cb5-9e7e-e66e09068e75">
