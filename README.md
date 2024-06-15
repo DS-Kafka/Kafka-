@@ -134,4 +134,4 @@ Test WebSocket Server 2 - Counter 2
 ```bash
 wscat -c ws://localhost:8085
 ```
-
+![img](https://github.com/DS-Kafka/Kafka-/blob/websocket-merged-to-main/screenShot.png)
