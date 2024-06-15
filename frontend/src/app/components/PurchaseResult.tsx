@@ -20,18 +20,6 @@ const fetcher = (url: any) => {
     },
   }).then((res) => res.json());
 };
-// const localData = {
-//   count: 82,
-//   results: [
-//     {
-//       name: "Luke Skywalker",
-//       height: "172",
-//       mass: "77",
-//       birth_year: "19BBY",
-//     },
-//     // 其他数据...
-//   ],
-// };
 
 export default function App() {
   const [page, setPage] = React.useState(1);
@@ -50,7 +38,9 @@ export default function App() {
   }, [rowData?.count, rowsPerPage]);
 
   const loadingState =
-    isLoading || rowData?.results.length === 0 ? "loading" : "idle";
+    isLoading || rowData?.result.length === 0 ? "loading" : "idle";
+
+  console.log(rowData);
 
   return (
     <Table
@@ -72,9 +62,9 @@ export default function App() {
       }
     >
       <TableHeader>
+        <TableColumn key="amount">Index</TableColumn>
         <TableColumn key="name">Name</TableColumn>
-        <TableColumn key="timestamp">timestamp</TableColumn>
-        <TableColumn key="amount">amount</TableColumn>
+        <TableColumn key="timestamp">Timestamp</TableColumn>
       </TableHeader>
       <TableBody
         items={rowData?.results ?? []}
