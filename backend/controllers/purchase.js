@@ -1,4 +1,5 @@
 const sendToKafka = require('../utils/sendToKafka');
+const wss = require('../controllers/websocketServer');
 /**
 * @typedef {Object} Order
 * @property {string} name 購買者名稱
@@ -26,6 +27,14 @@ const data = JSON.stringify({
   });
   try {
     await sendToKafka.sendToKafka(data);
+
+    // 將資料傳送給所有連接的 WebSocket 客戶端
+    wss.clients.forEach(function each(client) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(data);
+      }
+    });
+
     return res.status(200).send('OK');
   } catch (error) {
     console.error('Failed to send purchase details to Kafka', error);

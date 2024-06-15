@@ -1,7 +1,7 @@
 const express = require('express');
 const purchase = require('./controllers/purchase');
 const result = require('./controllers/result');
-const WebSocket = require('ws');
+// const WebSocket = require('ws');
 const { connectProducer } = require('./utils/sendToKafka');
 const { connectConsumer } = require('./consumer');
 
