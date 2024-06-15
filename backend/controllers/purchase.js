@@ -1,5 +1,6 @@
 const sendToKafka = require('../utils/sendToKafka');
-const wss = require('../controllers/websocketServer');
+const wss = require('./websocketServer_Counter1');
+const WebSocket = require('ws');
 /**
 * @typedef {Object} Order
 * @property {string} name 購買者名稱

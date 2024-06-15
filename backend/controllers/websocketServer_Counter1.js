@@ -1,3 +1,4 @@
+// websocket server for counter 1 (Kafka producer)
 const WebSocket = require('ws');
 
 const wss = new WebSocket.Server({ port: 8083 });

@@ -4,6 +4,8 @@ const result = require('./controllers/result');
 // const WebSocket = require('ws');
 const { connectProducer } = require('./utils/sendToKafka');
 const { connectConsumer } = require('./consumer');
+const websocketServer_Counter1 = require('./controllers/websocketServer_Counter1');
+const websocketServer_Counter2 = require('./controllers/websocketServer_Counter2');
 
 const app = express();
 const port = 3000;

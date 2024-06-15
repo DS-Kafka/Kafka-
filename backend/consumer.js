@@ -1,6 +1,7 @@
 const { Consumer } = require('node-rdkafka');
 const connectionPromise = require('./utils/db').connectionPromise;
-const wss = require('./controllers/websocketServer');
+const wss = require('./controllers/websocketServer_Counter2');
+const WebSocket = require('ws');
 
 let consumer = null;
 let count = 0;
