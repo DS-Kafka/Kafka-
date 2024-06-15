@@ -121,3 +121,17 @@ SELECT * FROM orders;
 ```
 <img width="803" alt="截圖 2024-06-11 凌晨12 53 11" src="https://github.com/DS-Kafka/Kafka-/assets/90824069/327e6dcd-5d8e-4b64-95bf-85f001121635">
 
+# WebSocket 測試
+Install wscat
+```bash
+npm install -g wscat
+```
+WebSocket Server 1 - Counter 1
+```bash
+wscat -c ws://localhost:8083  
+```
+WebSocket Server 2 - Counter 2
+```bash
+wscat -c ws://localhost:8085
+```
+
