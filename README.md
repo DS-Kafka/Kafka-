@@ -126,11 +126,11 @@ Install wscat
 ```bash
 npm install -g wscat
 ```
-WebSocket Server 1 - Counter 1
+Test WebSocket Server 1 - Counter 1
 ```bash
 wscat -c ws://localhost:8083  
 ```
-WebSocket Server 2 - Counter 2
+Test WebSocket Server 2 - Counter 2
 ```bash
 wscat -c ws://localhost:8085
 ```
