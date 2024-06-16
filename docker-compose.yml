@@ -14,6 +14,9 @@ services:
       depends_on:
         mysql:
           condition: service_healthy
+      ports:
+        - "8083:8083"  # 新增: 映射 WebSocket 伺服器 Counter1 的端口
+        - "8085:8085"  # 新增: 映射 WebSocket 伺服器 Counter2 的端口
 
   # ds_frontend:
   #     build:
