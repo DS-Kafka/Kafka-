@@ -1,6 +1,7 @@
 const sendToKafka = require('../utils/sendToKafka');
 const wss = require('./websocketServer_Counter1');
 const WebSocket = require('ws');
+let count = 0;
 /**
 * @typedef {Object} Order
 * @property {string} name 購買者名稱
@@ -27,12 +28,13 @@ const data = JSON.stringify({
     buy_time: Math.floor(now / 1000)
   });
   try {
+    count ++; 
     await sendToKafka.sendToKafka(data);
 
     // 將資料傳送給所有連接的 WebSocket 客戶端
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(data);
+        client.send(count);
       }
     });
 

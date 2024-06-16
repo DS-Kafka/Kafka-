@@ -34,13 +34,12 @@ function connectConsumer() {
         console.log('Data inserted into orders:', parsedData);
         count++;
         // 將 consumer 讀取的消息發送到 WebSocket Client
-        const message = {
-          data: parsedData,
-          count: getCount() 
-        };
+        // const message = {
+        //   count: getCount() 
+        // };
         wss.clients.forEach(function each(client) {
           if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(message));
+            client.send(JSON.stringify(count));
           }
         });
       } catch (error) {
