@@ -1,4 +1,4 @@
-version: '3.8'
+# version: '3.8'
 
 services:
 
@@ -14,6 +14,9 @@ services:
       depends_on:
         mysql:
           condition: service_healthy
+      ports:
+        - "8083:8083"  # 新增: 映射 WebSocket 伺服器 Counter1 的端口
+        - "8085:8085"  # 新增: 映射 WebSocket 伺服器 Counter2 的端口
 
   # ds_frontend:
   #     build:
@@ -24,8 +27,38 @@ services:
   #       - .env
   #     networks:
   #       - ds_network
+  zookeeper:
+    # image: wurstmeister/zookeeper:3.4.6
+    # image: wurstmeister/zookeeper:latest #改成最新的版本
+    image: bitnami/zookeeper:latest #改成最新的版本（M1 Mac要換成bitnami才支援）
+    ports:
+      - "2181:2181"
+    networks:
+      - ds_network
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes" #允許匿名登入
+
+  kafka:
+    image: wurstmeister/kafka:latest
+    ports:
+      - "9092:9092"
+    expose:
+      - "9093"
+    depends_on:
+      - zookeeper
+    environment:
+      # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_INTERNAL://kafka:9093  #改成內部名稱
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:9093
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ds_network
 
   mysql:
+    image: mysql:8.0 #新增這行
     build:
       context: .
       dockerfile: Dockerfile
@@ -51,6 +84,7 @@ services:
       retries: 10
     networks:
       - ds_network
+
   nginx:
     image: nginx
     container_name: ds_nginx

@@ -1,176 +1,152 @@
 import { useEffect } from "react";
 import * as echarts from "echarts";
 
-export default function Linechart() {
+const Linechart: React.FC = () => {
   useEffect(() => {
     const chartDom = document.getElementById("main");
+    if (!chartDom) return; // 确保 DOM 元素存在
+
     const myChart = echarts.init(chartDom);
 
-    let base = +new Date(2016, 9, 3);
-    let oneDay = 24 * 3600 * 1000;
-    let valueBase = Math.random() * 300;
-    let valueBase2 = Math.random() * 50;
-    let data = [];
-    let data2 = [];
-    for (var i = 1; i < 10; i++) {
-      var now = new Date((base += oneDay));
-      var dayStr = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join(
-        "-"
-      );
-      valueBase = Math.round((Math.random() - 0.5) * 20 + valueBase);
-      valueBase <= 0 && (valueBase = Math.random() * 300);
-      data.push([dayStr, valueBase]);
-      valueBase2 = Math.round((Math.random() - 0.5) * 20 + valueBase2);
-      valueBase2 <= 0 && (valueBase2 = Math.random() * 50);
-      data2.push([dayStr, valueBase2]);
-    }
+    const producerData: Array<[string, number]> = [];
+    const consumerData: Array<[string, number]> = [];
 
     const option = {
       title: {
         left: "center",
-        text: "Tootip and dataZoom on Mobile Device",
-      },
-      legend: {
-        top: "bottom",
-        data: ["Intention"],
+        text: "WebSocket Data Visualization",
       },
       tooltip: {
-        triggerOn: "none",
-        position: function (pt: any) {
-          return [pt[0], 130];
-        },
-        formatter: function (params: any) {
-          const { seriesName, value } = params[0];
-          return `${seriesName}: ${value[1]}`;
-        },
-      },
-      toolbox: {
-        left: "center",
-        itemSize: 25,
-        top: 55,
-        feature: {
-          dataZoom: {
-            yAxisIndex: "none",
-          },
-          restore: {},
+        trigger: "axis",
+        formatter: (params: any) => {
+          return params
+            .map((param: any) => `${param.seriesName}: ${param.value[1]}`)
+            .join("<br/>");
         },
       },
       xAxis: {
         type: "time",
-        axisPointer: {
-          value: "2016-10-7",
-          snap: true,
-          lineStyle: {
-            color: "#7581BD",
-            width: 2,
-          },
-          label: {
-            show: true,
-            formatter: function (params: any) {
-              return echarts.format.formatTime("yyyy-MM-dd", params.value);
-            },
-            backgroundColor: "#7581BD",
-          },
-          handle: {
-            show: true,
-            color: "#7581BD",
-          },
-        },
         splitLine: {
           show: false,
         },
       },
       yAxis: {
         type: "value",
-        axisTick: {
-          inside: true,
-        },
-        splitLine: {
-          show: false,
-        },
         axisLabel: {
           inside: true,
           formatter: "{value}\n",
         },
-        z: 10,
       },
-      grid: {
-        top: 110,
-        left: 15,
-        right: 15,
-        height: 160,
+      legend: {
+        top: "bottom", // 图例在底部显示
+        data: ["producer", "consumer"], // 图例的文本内容，与 series 中的 name 对应
       },
-      dataZoom: [
-        {
-          type: "inside",
-          throttle: 50,
-        },
-      ],
       series: [
         {
-          name: "Fake Data",
+          name: "producer",
           type: "line",
           smooth: true,
-          symbol: "circle",
+          symbol: "none",
           symbolSize: 5,
           sampling: "average",
           itemStyle: {
             color: "#0770FF",
           },
-          stack: "a",
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              {
-                offset: 0,
-                color: "rgba(58,77,233,0.8)",
-              },
-              {
-                offset: 1,
-                color: "rgba(58,77,233,0.3)",
-              },
-            ]),
-          },
-          data: data,
+          data: producerData,
         },
         {
-          name: "Fake Data",
+          name: "consumer",
           type: "line",
           smooth: true,
-          stack: "a",
-          symbol: "circle",
+          symbol: "none",
           symbolSize: 5,
           sampling: "average",
           itemStyle: {
-            color: "#F2597F",
+            color: "#FF7700",
           },
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              {
-                offset: 0,
-                color: "rgba(213,72,120,0.8)",
-              },
-              {
-                offset: 1,
-                color: "rgba(213,72,120,0.3)",
-              },
-            ]),
-          },
-          data: data2,
+          data: consumerData,
         },
       ],
     };
 
     myChart.setOption(option);
 
-    myChart.on("click", (params: any) => {
-      const { seriesName, value } = params;
-      alert(`${seriesName}: ${value[1]}`);
-    });
+    const ws = new WebSocket("ws://localhost:8083"); // producer
+    const ws2 = new WebSocket("ws://localhost:8085"); // consumer
+
+    ws.onopen = () => {
+      console.log("WebSocket connection opened for producer.");
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        console.log("WebSocket message received from producer:", event);
+        const message = event.data;
+        console.log("message", message);
+        const newDate = new Date(event.timeStamp);
+        const count = parseInt(message);
+        producerData.push([newDate.toISOString(), count]);
+        if (producerData.length > 50) {
+          producerData.shift();
+        }
+        myChart.setOption({
+          series: [
+            {
+              name: "producer",
+              data: producerData,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error parsing WebSocket message from producer:", error);
+      }
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket connection closed for producer.");
+    };
+
+    ws2.onopen = () => {
+      console.log("WebSocket connection opened for consumer.");
+    };
+
+    ws2.onmessage = (event) => {
+      try {
+        console.log("WebSocket message received from consumer:", event);
+        const message = event.data;
+        console.log("message2", message);
+
+        const newDate = new Date(event.timeStamp);
+        const count = parseInt(message);
+        consumerData.push([newDate.toISOString(), count]);
+        if (consumerData.length > 50) {
+          consumerData.shift();
+        }
+        myChart.setOption({
+          series: [
+            {
+              name: "consumer",
+              data: consumerData,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error parsing WebSocket message from consumer:", error);
+      }
+    };
+
+    ws2.onclose = () => {
+      console.log("WebSocket connection closed for consumer.");
+    };
 
     return () => {
-      myChart.dispose();
+      myChart.dispose(); // 释放 ECharts 资源
+      ws.close(); // 关闭 WebSocket 连接
+      ws2.close();
     };
   }, []);
 
   return <div id="main" style={{ width: "95%", height: "400px" }}></div>;
-}
+};
+
+export default Linechart;

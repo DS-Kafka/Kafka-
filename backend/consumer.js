@@ -1,46 +1,65 @@
-const kafka = require('node-rdkafka');
-const connectionPromise = require('./utils/db').connectionPromise;
+const { Consumer } = require("node-rdkafka");
+const connectionPromise = require("./utils/db").connectionPromise;
+const wss = require("./controllers/websocketServer_Counter2");
+const WebSocket = require("ws");
 
-const consumer = new kafka.KafkaConsumer({
-  'group.id': 'consumer-group',
-  'metadata.broker.list': 'localhost:9092',
-});
-
+let consumer = null;
 let count = 0;
 
-const consume = async () => {
-  try {
-    await consumer.connect();
-    console.log('successfully connected to kafka');
-    consumer.subscribe(['buy_topic']);
-    console.log('successfully subscribed to topic');
-
-    consumer.on('data', async (message) => {
-      try {
-        const buyData = JSON.parse(message.value.toString());
-        const name = buyData.buy_name;
-        const timestamp = new Date(buyData.buy_time * 1000).toISOString();
-
-        const query = "INSERT INTO orders (name, timestamp) VALUES (?, ?)";
-        await connectionPromise.execute(query, [id, name, timestamp]);
-        console.log('Data inserted into database successfully.');
-        count++;
-      } catch (error) {
-        console.error("Error processing message:", error.message);
-      }
-    });
-    consumer.consume();
-  } catch (error) {
-    console.error("Error in consuming or saving to database: ", error.message);
-  }
-};
-consume().catch((err) => {
-  console.error("Error in consumer: " + err.message);
-});
 const getCount = () => {
   return count;
 };
-// 新增匯出 getCount()
-module.exports = {
-  getCount
-};
+
+function connectConsumer() {
+  if (!consumer) {
+    consumer = new Consumer(
+      {
+        "group.id": "kafka",
+        "metadata.broker.list": "kafka:9092",
+      },
+      {}
+    );
+
+    consumer.connect();
+
+    consumer.on("ready", () => {
+      console.log("Consumer ready");
+      consumer.subscribe(["buy_topic"]);
+      consumer.consume();
+    });
+
+    consumer.on("data", async (data) => {
+      const parsedData = JSON.parse(data.value.toString());
+      const connection = await connectionPromise;
+      try {
+        const insertQuery =
+          "INSERT INTO orders (name, timestamp) VALUES (?, ?)";
+        await connection.execute(insertQuery, [
+          parsedData.buy_name,
+          new Date(parsedData.buy_time * 1000),
+        ]);
+        console.log("Data inserted into orders:", parsedData);
+        count++;
+        // 將 consumer 讀取的消息發送到 WebSocket Client
+        // const message = {
+        //   count: getCount()
+        // };
+        setInterval(() => {
+          wss.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+              client.send(count);
+            }
+          });
+        }, 1000);
+      } catch (error) {
+        console.error("Error inserting data into orders:", error);
+      }
+    });
+
+    consumer.on("event.error", (err) => {
+      console.error("Error from consumer:", err);
+    });
+  }
+}
+
+module.exports = { connectConsumer, getCount };

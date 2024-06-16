@@ -8,53 +8,47 @@ import {
   TableCell,
   Pagination,
   Spinner,
-  getKeyValue,
 } from "@nextui-org/react";
 import useSWR from "swr";
 
-const fetcher = (...args: string[]) => fetch(args[0]).then((res) => res.json());
-
-const localData = {
-  count: 82,
-  results: [
-    {
-      name: "Luke Skywalker",
-      height: "172",
-      mass: "77",
-      birth_year: "19BBY",
+const fetcher = (url: any) => {
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
     },
-    // 其他数据...
-  ],
+  }).then((res) => res.json());
+};
+
+const getKeyValue = (item: any, key: string) => {
+  return item[key] ?? "";
 };
 
 export default function App() {
   const [page, setPage] = React.useState(1);
-
-  const { data, isLoading } = useSWR(
-    `https://swapi.py4e.com/api/people?page=${page}`,
-    fetcher,
-    {
-      keepPreviousData: true,
-    }
-  );
-
-  // 使用本地数据或者API返回的数据，取决于 data 是否为 undefined
-  const rowData = data || localData;
-
   const rowsPerPage = 10;
 
-  const pages = useMemo(() => {
-    return rowData?.count ? Math.ceil(rowData.count / rowsPerPage) : 0;
-  }, [rowData?.count, rowsPerPage]);
+  const { data, error } = useSWR(`http://127.0.0.1/api/result`, fetcher, {
+    keepPreviousData: true,
+  });
 
-  const loadingState =
-    isLoading || rowData?.results.length === 0 ? "loading" : "idle";
+  const loadingState = !data ? "loading" : "idle";
+  const rowData = data?.buyers || [];
+
+  const startIndex = (page - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+
+  const paginatedData = useMemo(() => {
+    return rowData.slice(startIndex, endIndex);
+  }, [rowData, startIndex, endIndex]);
+
+  const totalPages = Math.ceil(rowData.length / rowsPerPage);
 
   return (
     <Table
       aria-label="Example table with client async pagination"
       bottomContent={
-        pages > 0 ? (
+        totalPages > 0 ? (
           <div className="flex w-full justify-center">
             <Pagination
               isCompact
@@ -62,7 +56,7 @@ export default function App() {
               showShadow
               color="primary"
               page={page}
-              total={pages}
+              total={totalPages}
               onChange={(page) => setPage(page)}
             />
           </div>
@@ -70,21 +64,22 @@ export default function App() {
       }
     >
       <TableHeader>
+        <TableColumn key="index">Index</TableColumn>
         <TableColumn key="name">Name</TableColumn>
-        <TableColumn key="height">Height</TableColumn>
-        <TableColumn key="mass">Mass</TableColumn>
-        <TableColumn key="birth_year">Birth year</TableColumn>
+        <TableColumn key="timestamp">Timestamp</TableColumn>
       </TableHeader>
       <TableBody
-        items={rowData?.results ?? []}
+        items={paginatedData}
         loadingContent={<Spinner />}
         loadingState={loadingState}
       >
         {(item: { name: string }) => (
           <TableRow key={item?.name}>
-            {(columnKey) => (
-              <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-            )}
+            <TableCell>
+              {startIndex + paginatedData.indexOf(item) + 1}
+            </TableCell>
+            <TableCell>{getKeyValue(item, "name")}</TableCell>
+            <TableCell>{getKeyValue(item, "timestamp")}</TableCell>
           </TableRow>
         )}
       </TableBody>
