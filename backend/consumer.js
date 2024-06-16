@@ -1,8 +1,9 @@
 const { Consumer } = require('node-rdkafka');
 const connectionPromise = require('./utils/db').connectionPromise;
+const wss = require('./controllers/websocketServer_Counter2');
+const WebSocket = require('ws');
 
 let consumer = null;
-
 let count = 0;
 
 const getCount = () => {
@@ -32,6 +33,16 @@ function connectConsumer() {
         await connection.execute(insertQuery, [parsedData.buy_name, new Date(parsedData.buy_time * 1000)]);
         console.log('Data inserted into orders:', parsedData);
         count++;
+        // 將 consumer 讀取的消息發送到 WebSocket Client
+        const message = {
+          data: parsedData,
+          count: getCount() 
+        };
+        wss.clients.forEach(function each(client) {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(message));
+          }
+        });
       } catch (error) {
         console.error('Error inserting data into orders:', error);
       }
