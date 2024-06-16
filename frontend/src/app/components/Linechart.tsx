@@ -8,7 +8,8 @@ const Linechart: React.FC = () => {
 
     const myChart = echarts.init(chartDom);
 
-    const data: Array<[string, number]> = [];
+    const producerData: Array<[string, number]> = [];
+    const consumerData: Array<[string, number]> = [];
 
     const option = {
       title: {
@@ -18,8 +19,9 @@ const Linechart: React.FC = () => {
       tooltip: {
         trigger: "axis",
         formatter: (params: any) => {
-          const { seriesName, value } = params[0];
-          return `${seriesName}: ${value[1]}`;
+          return params
+            .map((param: any) => `${param.seriesName}: ${param.value[1]}`)
+            .join("<br/>");
         },
       },
       xAxis: {
@@ -37,11 +39,11 @@ const Linechart: React.FC = () => {
       },
       legend: {
         top: "bottom", // 图例在底部显示
-        data: ["consumer"], // 图例的文本内容，与 series 中的 name 对应
+        data: ["producer", "consumer"], // 图例的文本内容，与 series 中的 name 对应
       },
       series: [
         {
-          name: "consumer",
+          name: "producer",
           type: "line",
           smooth: true,
           symbol: "circle",
@@ -50,77 +52,91 @@ const Linechart: React.FC = () => {
           itemStyle: {
             color: "#0770FF",
           },
-          data: data,
+          data: producerData,
+        },
+        {
+          name: "consumer",
+          type: "line",
+          smooth: true,
+          symbol: "circle",
+          symbolSize: 5,
+          sampling: "average",
+          itemStyle: {
+            color: "#FF7700",
+          },
+          data: consumerData,
         },
       ],
     };
 
     myChart.setOption(option);
 
-    const ws = new WebSocket("ws://localhost:8083"); //producer
-    const ws2 = new WebSocket("ws://localhost:8085"); //consumer
+    const ws = new WebSocket("ws://localhost:8083"); // producer
+    const ws2 = new WebSocket("ws://localhost:8085"); // consumer
 
     ws.onopen = () => {
-      console.log("WebSocket connection opened.");
+      console.log("WebSocket connection opened for producer.");
     };
 
     ws.onmessage = (event) => {
       try {
-        console.log("WebSocket message received:", event);
-        const message = JSON.parse(event.data);
-
+        console.log("WebSocket message received from producer:", event);
+        const message = event.data;
+        console.log("message", message);
         const newDate = new Date(message.timestamp);
-        const count = parseInt(message.count);
-        data.push([newDate.toISOString(), count]);
-        if (data.length > 50) {
-          data.shift();
+        const count = parseInt(message);
+        producerData.push([newDate.toISOString(), count]);
+        if (producerData.length > 50) {
+          producerData.shift();
         }
         myChart.setOption({
           series: [
             {
-              data: data,
+              name: "producer",
+              data: producerData,
             },
           ],
         });
       } catch (error) {
-        console.error("Error parsing WebSocket message:", error);
+        console.error("Error parsing WebSocket message from producer:", error);
       }
     };
 
     ws.onclose = () => {
-      console.log("WebSocket connection closed.");
+      console.log("WebSocket connection closed for producer.");
     };
 
     ws2.onopen = () => {
-      console.log("WebSocket connection opened.");
+      console.log("WebSocket connection opened for consumer.");
     };
 
     ws2.onmessage = (event) => {
       try {
-        console.log("WebSocket message received:", event);
-        const message = JSON.parse(event.data);
-        
+        console.log("WebSocket message received from consumer:", event);
+        const message = event.data;
+        console.log("message2", message);
 
         const newDate = new Date(message.timestamp);
-        const count = parseInt(message.count);
-        data.push([newDate.toISOString(), count]);
-        if (data.length > 50) {
-          data.shift();
+        const count = parseInt(message);
+        consumerData.push([newDate.toISOString(), count]);
+        if (consumerData.length > 50) {
+          consumerData.shift();
         }
         myChart.setOption({
           series: [
             {
-              data: data,
+              name: "consumer",
+              data: consumerData,
             },
           ],
         });
       } catch (error) {
-        console.error("Error parsing WebSocket message:", error);
+        console.error("Error parsing WebSocket message from consumer:", error);
       }
     };
 
     ws2.onclose = () => {
-      console.log("WebSocket connection closed.");
+      console.log("WebSocket connection closed for consumer.");
     };
 
     return () => {
