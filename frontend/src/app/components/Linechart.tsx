@@ -46,7 +46,7 @@ const Linechart: React.FC = () => {
           name: "producer",
           type: "line",
           smooth: true,
-          symbol: "circle",
+          symbol: "none",
           symbolSize: 5,
           sampling: "average",
           itemStyle: {
@@ -58,7 +58,7 @@ const Linechart: React.FC = () => {
           name: "consumer",
           type: "line",
           smooth: true,
-          symbol: "circle",
+          symbol: "none",
           symbolSize: 5,
           sampling: "average",
           itemStyle: {
@@ -83,7 +83,7 @@ const Linechart: React.FC = () => {
         console.log("WebSocket message received from producer:", event);
         const message = event.data;
         console.log("message", message);
-        const newDate = new Date(message.timestamp);
+        const newDate = new Date(event.timeStamp);
         const count = parseInt(message);
         producerData.push([newDate.toISOString(), count]);
         if (producerData.length > 50) {
@@ -116,7 +116,7 @@ const Linechart: React.FC = () => {
         const message = event.data;
         console.log("message2", message);
 
-        const newDate = new Date(message.timestamp);
+        const newDate = new Date(event.timeStamp);
         const count = parseInt(message);
         consumerData.push([newDate.toISOString(), count]);
         if (consumerData.length > 50) {

@@ -8,7 +8,6 @@ import {
   TableCell,
   Pagination,
   Spinner,
-  getKeyValue as getKey,
 } from "@nextui-org/react";
 import useSWR from "swr";
 
@@ -21,34 +20,35 @@ const fetcher = (url: any) => {
   }).then((res) => res.json());
 };
 
-// 修改 getKey 函數，確保能正確取得屬性值
 const getKeyValue = (item: any, key: string) => {
-  return getKey(item, key) ?? "";
+  return item[key] ?? "";
 };
 
 export default function App() {
   const [page, setPage] = React.useState(1);
+  const rowsPerPage = 10;
 
-  const { data, isLoading } = useSWR(`http://127.0.0.1/api/result`, fetcher, {
+  const { data, error } = useSWR(`http://127.0.0.1/api/result`, fetcher, {
     keepPreviousData: true,
   });
 
-  // 使用本地数据或者API返回的数据，取决于 data 是否为 undefined
+  const loadingState = !data ? "loading" : "idle";
   const rowData = data?.buyers || [];
 
-  const rowsPerPage = 10;
+  const startIndex = (page - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
 
-  const pages = useMemo(() => {
-    return Math.ceil(rowData.length / rowsPerPage);
-  }, [rowData.length, rowsPerPage]);
+  const paginatedData = useMemo(() => {
+    return rowData.slice(startIndex, endIndex);
+  }, [rowData, startIndex, endIndex]);
 
-  const loadingState = !data ? "loading" : "idle";
+  const totalPages = Math.ceil(rowData.length / rowsPerPage);
 
   return (
     <Table
       aria-label="Example table with client async pagination"
       bottomContent={
-        pages > 0 ? (
+        totalPages > 0 ? (
           <div className="flex w-full justify-center">
             <Pagination
               isCompact
@@ -56,7 +56,7 @@ export default function App() {
               showShadow
               color="primary"
               page={page}
-              total={pages}
+              total={totalPages}
               onChange={(page) => setPage(page)}
             />
           </div>
@@ -69,14 +69,14 @@ export default function App() {
         <TableColumn key="timestamp">Timestamp</TableColumn>
       </TableHeader>
       <TableBody
-        items={rowData}
+        items={paginatedData}
         loadingContent={<Spinner />}
         loadingState={loadingState}
       >
-        {(item) => (
+        {(item: { name: string }) => (
           <TableRow key={item?.name}>
             <TableCell>
-              {(page - 1) * rowsPerPage + rowData.indexOf(item) + 1}
+              {startIndex + paginatedData.indexOf(item) + 1}
             </TableCell>
             <TableCell>{getKeyValue(item, "name")}</TableCell>
             <TableCell>{getKeyValue(item, "timestamp")}</TableCell>
