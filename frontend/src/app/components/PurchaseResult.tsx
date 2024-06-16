@@ -8,7 +8,7 @@ import {
   TableCell,
   Pagination,
   Spinner,
-  getKeyValue,
+  getKeyValue as getKey,
 } from "@nextui-org/react";
 import useSWR from "swr";
 
@@ -21,6 +21,11 @@ const fetcher = (url: any) => {
   }).then((res) => res.json());
 };
 
+// 修改 getKey 函數，確保能正確取得屬性值
+const getKeyValue = (item: any, key: string) => {
+  return getKey(item, key) ?? "";
+};
+
 export default function App() {
   const [page, setPage] = React.useState(1);
 
@@ -29,18 +34,15 @@ export default function App() {
   });
 
   // 使用本地数据或者API返回的数据，取决于 data 是否为 undefined
-  const rowData = data;
+  const rowData = data?.buyers || [];
 
   const rowsPerPage = 10;
 
   const pages = useMemo(() => {
-    return rowData?.count ? Math.ceil(rowData.count / rowsPerPage) : 0;
-  }, [rowData?.count, rowsPerPage]);
+    return Math.ceil(rowData.length / rowsPerPage);
+  }, [rowData.length, rowsPerPage]);
 
-  const loadingState =
-    isLoading || rowData?.result.length === 0 ? "loading" : "idle";
-
-  console.log(rowData);
+  const loadingState = !data ? "loading" : "idle";
 
   return (
     <Table
@@ -62,20 +64,22 @@ export default function App() {
       }
     >
       <TableHeader>
-        <TableColumn key="amount">Index</TableColumn>
+        <TableColumn key="index">Index</TableColumn>
         <TableColumn key="name">Name</TableColumn>
         <TableColumn key="timestamp">Timestamp</TableColumn>
       </TableHeader>
       <TableBody
-        items={rowData?.results ?? []}
+        items={rowData}
         loadingContent={<Spinner />}
         loadingState={loadingState}
       >
-        {(item: { name: string }) => (
+        {(item) => (
           <TableRow key={item?.name}>
-            {(columnKey) => (
-              <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-            )}
+            <TableCell>
+              {(page - 1) * rowsPerPage + rowData.indexOf(item) + 1}
+            </TableCell>
+            <TableCell>{getKeyValue(item, "name")}</TableCell>
+            <TableCell>{getKeyValue(item, "timestamp")}</TableCell>
           </TableRow>
         )}
       </TableBody>
