@@ -1,28 +1,23 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import * as echarts from "echarts";
 
-export default function Linechart() {
-  const chartRef = useRef<echarts.ECharts | null>(null);
-  const ws = useRef<WebSocket | null>(null);
-  const data = useRef<Array<[string, number]>>([]);
-
+const Linechart: React.FC = () => {
   useEffect(() => {
     const chartDom = document.getElementById("main");
+    if (!chartDom) return; // 确保 DOM 元素存在
+
     const myChart = echarts.init(chartDom);
-    chartRef.current = myChart;
+
+    const data: Array<[string, number]> = [];
 
     const option = {
       title: {
         left: "center",
-        text: "Tooltip and dataZoom on Mobile Device",
-      },
-      legend: {
-        top: "bottom",
-        data: ["Count"],
+        text: "WebSocket Data Visualization",
       },
       tooltip: {
         trigger: "axis",
-        formatter: function (params: any) {
+        formatter: (params: any) => {
           const { seriesName, value } = params[0];
           return `${seriesName}: ${value[1]}`;
         },
@@ -39,23 +34,14 @@ export default function Linechart() {
           inside: true,
           formatter: "{value}\n",
         },
-        z: 10,
       },
-      grid: {
-        top: 110,
-        left: 15,
-        right: 15,
-        height: 160,
+      legend: {
+        top: "bottom", // 图例在底部显示
+        data: ["consumer"], // 图例的文本内容，与 series 中的 name 对应
       },
-      dataZoom: [
-        {
-          type: "inside",
-          throttle: 50,
-        },
-      ],
       series: [
         {
-          name: "Count",
+          name: "consumer",
           type: "line",
           smooth: true,
           symbol: "circle",
@@ -64,38 +50,87 @@ export default function Linechart() {
           itemStyle: {
             color: "#0770FF",
           },
-          data: data.current,
+          data: data,
         },
       ],
     };
 
     myChart.setOption(option);
 
-    ws.current = new WebSocket("ws://localhost:8081");
+    const ws = new WebSocket("ws://localhost:8083"); //producer
+    const ws2 = new WebSocket("ws://localhost:8085"); //consumer
 
-    ws.current.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      const newDate = new Date();
-      data.current.push([newDate.toISOString(), message.count]);
-      if (data.current.length > 50) {
-        data.current.shift();
+    ws.onopen = () => {
+      console.log("WebSocket connection opened.");
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        console.log("WebSocket message received:", event);
+        const message = JSON.parse(event.data);
+
+        const newDate = new Date(message.timestamp);
+        const count = parseInt(message.count);
+        data.push([newDate.toISOString(), count]);
+        if (data.length > 50) {
+          data.shift();
+        }
+        myChart.setOption({
+          series: [
+            {
+              data: data,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error);
       }
-      myChart.setOption({
-        series: [
-          {
-            data: data.current,
-          },
-        ],
-      });
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket connection closed.");
+    };
+
+    ws2.onopen = () => {
+      console.log("WebSocket connection opened.");
+    };
+
+    ws2.onmessage = (event) => {
+      try {
+        console.log("WebSocket message received:", event);
+        const message = JSON.parse(event.data);
+        
+
+        const newDate = new Date(message.timestamp);
+        const count = parseInt(message.count);
+        data.push([newDate.toISOString(), count]);
+        if (data.length > 50) {
+          data.shift();
+        }
+        myChart.setOption({
+          series: [
+            {
+              data: data,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error);
+      }
+    };
+
+    ws2.onclose = () => {
+      console.log("WebSocket connection closed.");
     };
 
     return () => {
-      myChart.dispose();
-      if (ws.current) {
-        ws.current.close();
-      }
+      myChart.dispose(); // 释放 ECharts 资源
+      ws.close(); // 关闭 WebSocket 连接
+      ws2.close();
     };
   }, []);
 
   return <div id="main" style={{ width: "95%", height: "400px" }}></div>;
-}
+};
+
+export default Linechart;
