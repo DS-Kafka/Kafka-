@@ -4,7 +4,7 @@ import * as echarts from "echarts";
 const Linechart: React.FC = () => {
   useEffect(() => {
     const chartDom = document.getElementById("main");
-    if (!chartDom) return; // 确保 DOM 元素存在
+    if (!chartDom) return; 
 
     const myChart = echarts.init(chartDom);
 
@@ -14,7 +14,7 @@ const Linechart: React.FC = () => {
     const option = {
       title: {
         left: "center",
-        text: "WebSocket Data Visualization",
+        text: "Kafka Throughput",
       },
       tooltip: {
         trigger: "axis",
@@ -38,8 +38,8 @@ const Linechart: React.FC = () => {
         },
       },
       legend: {
-        top: "bottom", // 图例在底部显示
-        data: ["producer", "consumer"], // 图例的文本内容，与 series 中的 name 对应
+        top: "bottom",
+        data: ["producer", "consumer"],
       },
       series: [
         {
@@ -82,18 +82,21 @@ const Linechart: React.FC = () => {
       try {
         console.log("WebSocket message received from producer:", event);
         const message = event.data;
-        console.log("message", message);
-        const newDate = new Date(event.timeStamp);
+        const newDate = new Date(); // 使用当前时间
         const count = parseInt(message);
         producerData.push([newDate.toISOString(), count]);
-        if (producerData.length > 50) {
-          producerData.shift();
-        }
+        // if (producerData.length > 50) {
+        //   producerData.shift();
+        // }
         myChart.setOption({
           series: [
             {
               name: "producer",
               data: producerData,
+            },
+            {
+              name: "consumer",
+              data: consumerData,
             },
           ],
         });
@@ -114,16 +117,18 @@ const Linechart: React.FC = () => {
       try {
         console.log("WebSocket message received from consumer:", event);
         const message = event.data;
-        console.log("message2", message);
-
-        const newDate = new Date(event.timeStamp);
+        const newDate = new Date(); // 使用当前时间
         const count = parseInt(message);
         consumerData.push([newDate.toISOString(), count]);
-        if (consumerData.length > 50) {
-          consumerData.shift();
-        }
+        // if (consumerData.length > 50) {
+        //   consumerData.shift();
+        // }
         myChart.setOption({
           series: [
+            {
+              name: "producer",
+              data: producerData,
+            },
             {
               name: "consumer",
               data: consumerData,
@@ -140,8 +145,8 @@ const Linechart: React.FC = () => {
     };
 
     return () => {
-      myChart.dispose(); // 释放 ECharts 资源
-      ws.close(); // 关闭 WebSocket 连接
+      myChart.dispose();
+      ws.close();
       ws2.close();
     };
   }, []);
