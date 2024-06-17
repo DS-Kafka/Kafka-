@@ -6,9 +6,9 @@ const errorCount = new Counter('errors');
 
 export const options = {
     stages: [
-        { duration: '1m', target: 10000 }, // ramp-up to 20 users over 10 seconds
-        { duration: '1m', target: 10000 }, // stay at 20 users for 30 seconds
-        { duration: '1m', target: 0 },  // ramp-down to 0 users over 10 seconds
+        { duration: '10s', target: 10000 }, // ramp-up to 20 users over 10 seconds
+        { duration: '10s', target: 10000 }, // stay at 20 users for 30 seconds
+        { duration: '10s', target: 0 },  // ramp-down to 0 users over 10 seconds
     ],
     thresholds: {
         errors: ['count<1'], // errors should be 0
@@ -19,8 +19,7 @@ export const options = {
 export default function () {
     const url = 'http://ds_backend:3000/api/purchase';
     const payload = JSON.stringify({
-        buyerName: `User_${__VU}_${__ITER}`,
-        amount: Math.floor(Math.random() * 10) + 1, // random amount between 1 and 10
+        name: `User_${__VU}_${__ITER}`,
     });
 
     const params = {
