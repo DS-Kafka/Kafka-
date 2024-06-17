@@ -142,13 +142,13 @@ export default function Product(props: any) {
                     placeholder="請輸入您的姓名"
                     onChange={(e) => setName(e.target.value)}
                   />
-                  <Input
+                  {/* <Input
                     type="number"
                     label="購買商品數量"
                     placeholder="0"
                     variant="underlined"
                     onChange={handleQuantityChange}
-                  />
+                  /> */}
                 </div>
               </ModalBody>
               <ModalFooter>
@@ -161,7 +161,7 @@ export default function Product(props: any) {
                     await handlePurchase();
                     onClose();
                   }}
-                  isDisabled={quantity === 0 || name === "" ? true : false}
+                  isDisabled={name === "" ? true : false}
                 >
                   確定購買
                 </Button>
